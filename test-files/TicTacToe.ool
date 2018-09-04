@@ -1,0 +1,404 @@
+class TicTacToe
+{
+	private int[][] board;
+
+	static private int MAX      =   1;
+	static private int EMPTY    =   0;
+	static private int MIN      =  -1;
+	static private int MAX_WINS =  1000;
+	static private int MIN_WINS = -1000;
+	
+	public TicTacToe()
+	{
+		board = new int[3][3];
+
+		int i;
+		for(i = 0; i < 3; i = i + 1)
+		{
+			board[i] = new int[3];
+		}
+
+		CleanBoard();
+	}
+	
+
+	private bool Wins(int player)
+	{
+		int x;
+		int y;
+
+		for(y = 0; y < 3; y = y + 1)
+		{
+			bool row = true;
+			for(x = 0; x < 3; x = x + 1)
+			{
+				row = row && (board[y][x] == player);
+			}
+			
+			if(row)
+				return true;
+		}
+
+		for(x = 0; x < 3; x = x + 1)
+		{
+			bool column = true;
+			for(y = 0; y < 3; y = y + 1)
+			{
+				column = column && (board[y][x] == player);
+			}
+			
+			if(column)
+				return true;
+		}
+
+
+		bool diagonal0 = true;
+		bool diagonal1 = true;
+		for(x = 0; x < 3; x = x + 1)
+		{
+			diagonal0 = diagonal0 && (board[x][x] == player);
+			diagonal1 = diagonal1 && (board[x][2 - x] == player);
+		}
+
+		if(diagonal0 || diagonal1)
+			return true;
+		
+		return false;
+	}
+
+	private bool CalculateRow(int player, int row)
+	{
+		int x;
+		bool val = true;
+
+		for(x = 0; x < 3; x = x + 1)
+		{
+			val = val && ((board[row][x] == player) || (board[row][x] == EMPTY));
+		}
+		
+		return val;
+	}
+
+	private bool CalculateColumn(int player, int column)
+	{
+		int y;
+		bool val = true;
+
+		for(y = 0; y < 3; y = y + 1)
+		{
+			val = val && ((board[y][column] == player) || (board[y][column] == EMPTY));
+		}
+		
+		return val;
+	}
+
+	private bool CalculateDiagonal(int player, int diagonal)
+	{
+		int y;
+		bool val = true;
+
+		for(y = 0; y < 3; y = y + 1)
+		{
+			int x = y;
+
+			if(diagonal == 1)
+				x = 2 - y;
+
+			val = val && ((board[y][x] == player) || (board[y][x] == EMPTY));
+		}
+
+		return val;
+	}
+
+	private int Calculate(int player)
+	{
+		int i;
+		int val = 0;
+
+		for(i = 0; i < 3; i = i + 1)
+		{	
+			if(CalculateRow(player, i))
+				val = val + 1;
+
+			if(CalculateColumn(player, i))
+				val = val + 1;
+
+			if(i < 2)
+			{
+				if(CalculateDiagonal(player, i))
+					val = val + 1;
+			}
+		}
+	
+		return val;
+	}
+
+	private int Evaluate()
+	{
+		if(Wins(MAX))
+			return MAX_WINS;
+
+		if(Wins(MIN))
+			return MIN_WINS;
+		
+		int max = Calculate(MAX);
+
+		int min = Calculate(MIN);
+
+		return max - min;
+	}
+
+
+	private void CleanBoard()
+	{
+		int y;
+		int x;
+
+		for(y = 0; y < 3; y = y + 1)
+		{
+			for(x = 0; x < 3; x = x + 1)
+			{
+				board[y][x] = EMPTY;
+			}
+		}
+	}
+
+	private void ShowBoardPos(int y, int x)
+	{
+		if(board[y][x] == MAX)   write "X";
+		if(board[y][x] == MIN)   write "O";
+		if(board[y][x] == EMPTY) write " ";
+	}
+
+	private void ShowBoard()
+	{
+		write "\n";
+		write "Y\n";
+		write "^\t"; ShowBoardPos(2, 0); write "|"; ShowBoardPos(2, 1); write "|"; ShowBoardPos(2, 2); write "\n";
+		write "|\t-----\n";
+		write "|\t"; ShowBoardPos(1, 0); write "|"; ShowBoardPos(1, 1); write "|"; ShowBoardPos(1, 2); write "\n";
+		write "|\t-----\n";
+		write "|\t"; ShowBoardPos(0, 0); write "|"; ShowBoardPos(0, 1); write "|"; ShowBoardPos(0, 2); write "\n";
+		write "|\n";
+		write "o----->X\n";	
+	}
+
+	private void AskMovement()
+	{
+		bool ok = false;
+
+		while(!ok)
+		{
+			write "Where you want to move? (input 0 to 2)\n";
+
+			int x;
+			write "X? ";
+			read x;
+
+			int y;
+			write "Y? ";
+			read y;
+
+			ok = board[y][x] == EMPTY;
+
+			if(ok)
+				board[y][x] = MAX;
+			else
+				write "Position is taken!\n";
+		}
+	}
+
+	private void CongratulatePlayer()
+	{
+		ShowBoard();
+		write "Congratulations! You've won\n";
+	}
+
+	private void CongratulateAI()
+	{
+		ShowBoard();
+		write "Oooh you've lost\n";
+	}
+
+	private void Draw()
+	{
+		ShowBoard();
+		write "Draw!\n";
+	}
+
+	private bool IsThereRoom()
+	{
+		int y;
+		int x;
+
+		for(y = 0; y < 3; y = y + 1)
+			for(x = 0; x < 3; x = x + 1)
+				if (board[y][x] == EMPTY)
+					return true;
+	
+		return false;
+	}
+
+	private int MinPlays(int level, int maxLevel)
+	{
+		int bestValue = 2000;
+		int bestX = -1;
+		int bestY = -1;
+
+		bool tokenSet = false;
+
+		int y = 0;
+		int x = 0;
+
+		for(y = 0; y < 3; y = y + 1)
+		{
+			for(x = 0; x < 3; x = x + 1)
+			{
+				if (board[y][x] == EMPTY)
+				{
+					board[y][x] = MIN;
+					
+					if(Wins(MIN))
+					{
+						bestValue = MIN_WINS;
+						bestX = x;
+						bestY = y;
+						tokenSet = true;
+					}
+					else
+					{
+						int val;
+						if (level < maxLevel)
+						{
+							val = MaxPlays(level + 1, maxLevel);
+						}
+						else
+						{
+							val = Evaluate();
+						}
+						
+						if (val < bestValue)
+						{
+							bestValue = val;
+							bestX = x;
+							bestY = y;
+							tokenSet = true;
+						}
+					}
+
+					board[y][x] = EMPTY;
+				}
+			}
+		}
+
+		if (!tokenSet)
+		{
+			bestValue = Evaluate();
+			return bestValue;
+		}
+
+		if(level == 0)
+		{
+			write "AI puts in ("; write bestX; write ", "; write bestY; write ")\n";
+			board[bestY][bestX] = MIN;
+		}
+
+		return bestValue;
+	}
+
+	private int MaxPlays(int level, int maxLevel)
+	{
+		int bestValue = -2000;
+		int bestX = -1;
+		int bestY = -1;
+
+		bool tokenSet = false;
+
+		int y = 0;
+		int x = 0;
+
+		for(y = 0; y < 3; y = y + 1)
+		{
+			for(x = 0; x < 3; x = x + 1)
+			{
+				if (board[y][x] == EMPTY)
+				{
+					board[y][x] = MAX;
+
+					int val = Evaluate();
+					if (val > bestValue)
+					{
+						bestValue = val;
+						bestX = x;
+						bestY = y;
+						tokenSet = true;
+					}
+
+					board[y][x] = EMPTY;
+				}
+			}
+		}
+		
+		if (!tokenSet)
+		{
+			bestValue = Evaluate();
+			return bestValue;
+		}
+
+		board[bestY][bestX] = MAX;
+
+		int val;
+		if(level < maxLevel)
+			val = MinPlays(level + 1, maxLevel);
+		else
+			val = bestValue;
+
+		board[bestY][bestX] = EMPTY;
+
+		return val;
+	}
+
+	private void AIMoves()
+	{
+		int v;
+		v = MinPlays(0, 1);
+	}
+	
+	private void Execute()
+	{
+		CleanBoard();
+
+		while (IsThereRoom())
+		{
+			ShowBoard();
+
+			AskMovement();
+
+			if (Evaluate() == MAX_WINS)
+			{
+				CongratulatePlayer();
+				return;
+			}
+
+			if (IsThereRoom())
+			{
+				AIMoves();
+
+				if (Evaluate() == MIN_WINS)
+				{
+					CongratulateAI();
+					return;
+				}
+			}
+		}
+
+		Draw();
+	}
+
+	static public void main(string[] args)
+	{
+
+		TicTacToe game = new TicTacToe();
+		game.Execute();
+	}
+}

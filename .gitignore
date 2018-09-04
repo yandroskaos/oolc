@@ -30,3 +30,17 @@
 *.exe
 *.out
 *.app
+
+bin/
+build/
+doc/
+.vs
+
+src/pch.h.gch/*.gc*
+.tss
+
+.vscode/.cmaketools.json
+
+rules.txt
+tokens.txt
+

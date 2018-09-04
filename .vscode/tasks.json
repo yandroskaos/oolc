@@ -1,0 +1,56 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build Debug",
+            "type": "shell",
+            "command": "bash",
+            "args": [
+                "./build-debug"
+            ],
+            "options": {
+                "cwd": "build-scripts"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Clean project",
+            "type": "shell",
+            "command": "bash",
+            "args": [
+                "./clean-project",
+                "--all"
+            ],
+            "options": {
+                "cwd": "build-scripts"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Configure (Debug)",
+            "type": "shell",
+            "command": "bash",
+            "args": [
+                "./configure-debug"
+            ],
+            "options": {
+                "cwd": "build-scripts"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        }
+    ]
+}

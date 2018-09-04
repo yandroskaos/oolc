@@ -1,0 +1,12 @@
+#!/bin/bash
+
+if [ "$(basename $(pwd))" != "build-scripts" ]; then
+    echo "You must be in build-scripts to run this script"
+    exit -1
+fi
+
+cmake --build ../build --target clean
+
+if [ "$1" == "--all" ]; then
+    rm -rf ../bin ../build 2>/dev/null
+fi
